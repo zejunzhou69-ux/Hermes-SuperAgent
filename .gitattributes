@@ -1,0 +1,52 @@
+# ============================================================
+# Hermes-SuperAgent · .gitattributes
+# 管 git 对文件换行符 / 二进制的处理，保证跨平台 clone 行为一致。
+# ============================================================
+
+# --- 核心原则：文本文件统一 LF，避免 Windows/Mac/Linux 换行符来回变 ---
+* text=auto eol=lf
+
+# --- 强制 CRLF：Windows 批处理脚本（双击运行，LF 换行会执行异常）---
+*.bat text eol=crlf
+
+# --- 强制 CRLF：Windows 计划任务/脚本（若有）---
+*.cmd text eol=crlf
+
+# --- 纯文本：统一 LF（源码 / 文档 / 配置）---
+*.py text
+*.js text
+*.ts text
+*.mjs text
+*.json text
+*.yaml text
+*.yml text
+*.md text
+*.rst text
+*.toml text
+*.ini text
+*.txt text
+*.xml text
+*.html text
+*.css text
+*.sh text eol=lf
+*.ps1 text eol=crlf
+
+# --- 二进制文件：标记 binary，git 不做文本 diff / 换行符转换 ---
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.gz binary
+*.whl binary
+*.exe binary
+*.dll binary
+*.so binary
+*.dylib binary
+
+# --- Playwright 浏览器 / 字体等（若被误加入）---
+chromium-* binary
+ffmpeg-* binary

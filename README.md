@@ -2,12 +2,16 @@
 
 > **一个能自己上网、自己长出能力、自己能组队干活的开源智能体运行时。**
 
-[![Tests](https://img.shields.io/badge/tests-134%20passed-brightgreen)](#测试与验证)
 [![Python](https://img.shields.io/badge/python-%3E%3D3.10-blue)](https://www.python.org/)
-[![Node](https://img.shields.io/badge/node-%5E22.19%20%7C%7C%20%3E%3D24-green)](https://nodejs.org/)
 [![License](https://img.shields.io/badge/license-MIT-yellow)](LICENSE)
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)]()
+[![多模态](https://img.shields.io/badge/multimodal-识图%20%2B%20生图%20%2B%20生视频-purple)]()
+[![可交互](https://img.shields.io/badge/browser-画面滚轮/点击-可交互-teal)]()
+[![部署](https://img.shields.io/badge/部署-一键脚本-绿)](一键部署.bat)
 
 Hermes-SuperAgent 把三个开源项目魔改融合，构建出一个**自带嵌入式浏览器、强爬取、可深度魔改、国内外双栈接入、支持团队多智能体协作**的超级智能体。
+
+**多模态版**：三个模型各就各位 —— `agnes-3.0-flash`（文本·视觉）识图、`agnes-image-2.5-flash` 生图、`agnes-video-2.5-flash` 生视频；密钥/模型可在面板设置栏**随时更换**，画面支持**滚轮滚动 / 鼠标点击**直接操作内嵌浏览器。
 
 ---
 
