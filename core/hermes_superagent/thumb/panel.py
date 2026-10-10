@@ -517,8 +517,9 @@ PANEL_HTML = r"""<!doctype html>
             <label>清晰度</label>
             <select id="gQuality">
               <option value="75">标准（75，省流量）</option>
-              <option value="90" selected>清晰（90，默认）</option>
-              <option value="95">高清（95，锐利）</option>
+              <option value="90">清晰（90）</option>
+              <option value="95" selected>高清（95，默认）</option>
+              <option value="100">无损（100，最锐利）</option>
             </select>
           </div>
           <div class="set-note">改清晰度/帧率后点「暂停」再「恢复」会重连帧流生效；或刷新页面。</div>
@@ -778,7 +779,8 @@ function setPill(id, cls) { $(id).className = 'pill ' + cls; }
    返回 {x,y} 视口坐标；滚轮用画面中心 y 作锚点。 */
 const VIEW_W = 1440, VIEW_H = 900;  // 与默认视口一致
 function frameToViewport(px, py) {
-  // canvas 的 CSS 显示尺寸
+  // px,py 是 CSS 像素坐标（鼠标事件给的是 CSS 坐标）；canvas 渲染分辨率是物理像素（×dpr），
+  // 但映射到"帧坐标"只看 CSS 显示尺寸（画面在 canvas 里 contain 居中，CSS 尺寸即视觉尺寸）
   const cw = cv.clientWidth || cv.width;
   const ch = cv.clientHeight || cv.height;
   // 帧的原始尺寸（最近一帧的 width/height）
@@ -860,9 +862,10 @@ function startStream() {
   setPill('sBrowser','wait');
   const fps = $('gFps').value || '4';
   // 清晰度：随面板「清晰度」选择（q 1-100）+ 按设备像素比提高帧宽
-  const quality = $('gQuality').value || '90';
+  const quality = $('gQuality').value || '95';
   const dpr = window.devicePixelRatio || 1;
-  // 大屏帧宽：随视口 1440（不再写死 360）；高 DPI 屏幕按 dpr 提宽，避免 canvas 放大发糊
+  // 大屏帧宽：随视口 1440（不再写死 360）；高 DPI 屏幕按 dpr 提宽至 1920 上限，
+  // 与 canvas 物理分辨率（×dpr）匹配，画面锐利接近原网页渲染
   const frameW = Math.min(1920, Math.round(1440 * Math.min(dpr, 1.5)));
   lastSeq = 0;
   const es = new EventSource('/thumb/frames?fps=' + fps + '&max_width=' + frameW + '&quality=' + quality);
@@ -902,12 +905,16 @@ function startStream() {
     $('ph').style.display = 'none';
     const img = new Image();
     img.onload = () => {
-      // 同步 canvas 渲染分辨率到 CSS 显示尺寸（保持画面清晰，不拉伸模糊）——
-      // 只在尺寸真正变化时改 width/height（避免每帧清空画布）
+      // 同步 canvas 渲染分辨率到【物理像素】= CSS 尺寸 × devicePixelRatio（高 DPI 屏发糊根因）。
+      // 只在尺寸真正变化时改 width/height（避免每帧清空画布）。
+      // dpr=2 时 canvas 物理分辨率翻倍，画面锐利如原网页渲染；dpr=1 时行为不变。
+      const dpr = window.devicePixelRatio || 1;
       const rw = cv.clientWidth, rh = cv.clientHeight;
-      if (rw && rh && (cv.width !== rw || cv.height !== rh)) {
-        cv.width = rw; cv.height = rh;
+      const bw = Math.round(rw * dpr), bh = Math.round(rh * dpr);  // 物理像素
+      if (rw && rh && (cv.width !== bw || cv.height !== bh)) {
+        cv.width = bw; cv.height = bh;
       }
+      // 绘制坐标系用物理像素（ctx 已随 canvas.width 自动按物理像素建）
       ctx2d.clearRect(0, 0, cv.width, cv.height);
       // 按帧原比例 contain 绘制到画布（画面完整、不裁切、不变形，宽舞台横向居中放大）
       const iw = img.width, ih = img.height;
