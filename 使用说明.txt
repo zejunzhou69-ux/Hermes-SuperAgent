@@ -1,0 +1,83 @@
+# Hermes-SuperAgent · 便携版（多模态版）
+
+所有脚本 + 核心代码打包在**这一个文件夹**里，无需 DSH 宿主、无需安装到全局，
+把文件夹拷到任意机器、双击 `一键部署.bat` 就能用。
+
+**多模态三模型分工**（全部可更换模型名/密钥，面板设置里改）：
+- `agnes-3.0-flash`（文本模型，视觉能力）→ **识图**：把右侧画面截图交给它"看图说话"
+- `agnes-image-2.5-flash`（生图模型）→ **生图**：文字描述 → 出图（面板显示 + 下载）
+- `agnes-video-2.5-flash`（生视频模型）→ **生视频**：文字描述 → 异步出视频（面板内播放）
+
+## 目录结构
+
+```
+hermes-superagent-portable\
+├── 一键部署.bat        ← 首次 + 日常都用它（装依赖+Chromium+密钥模板+自检+起面板）
+├── 启动工作台.bat      ← 已部署过只起面板（不重装依赖）
+├── 安装部署.bat        ← 老版本，保留
+├── core\
+│   ├── hermes_superagent\   ← 全部 Python 核心源码（多模态能力）
+│   ├── tests\               ← 单测
+│   ├── e2e_test.py          ← 端到端冒烟
+│   └── pyproject.toml
+├── skills\                  ← 示例技能（自扩展种子）
+├── README.md / LICENSE
+└── 使用说明.txt
+```
+
+## 使用步骤
+
+1. **首次**：双击 `一键部署.bat`（装依赖 + Playwright Chromium + 密钥模板 + 自检 + 自动起面板）
+   - 已部署过的机器可跳过，直接双击 `启动工作台.bat`
+2. **日常**：双击 `启动工作台.bat`
+   - 弹出原生桌面窗口：左侧对话 + 设置 + 多模态工具，右侧 **1440×900 大屏**内嵌浏览器
+   - 若 pywebview 不可用，自动回落到默认浏览器标签页打开
+   - 停止：关闭窗口或黑窗 Ctrl+C
+
+## 命令行方式（等价）
+
+```
+cd core
+python -m hermes_superagent panel --port 8766
+```
+
+## 其他能力
+
+| 命令 | 说明 |
+|---|---|
+| `python -m hermes_superagent crawl <url>` | 分级爬取（L1–L3） |
+| `python -m hermes_superagent mcp` | 以 stdio MCP server 运行 |
+| `python -m hermes_superagent thumb --port 8766` | 仅起帧流服务（不弹窗口） |
+| `python -m hermes_superagent bridge --port 8765` | DSH 宿主 Bridge（可选，本包不依赖） |
+| `python e2e_test.py` | 端到端自检 |
+
+## 密钥与模型（可更换，不写死在代码里）
+
+浏览器画面 / 爬取**不需要任何 key**。
+想让 AI 对话 + 识图 + 生图 + 生视频 真正跑起来：
+- **推荐**：打开面板左侧「⚙ 设置」→ 填 agnes key / 端点 / 生图模型 / 生视频模型 → 「保存设置」
+  （写进 `secrets.json`，重启后保留，随时可换回别的 key）
+- **或**：直接编辑 `%USERPROFILE%\.hermes-superagent\secrets.json`
+
+密钥文件字段：
+```json
+{
+  "agnes.api_key": "sk-...",                 // 必填（对话/识图/生图/生视频共用）
+  "agnes.base_url": "https://apihub.agnes-ai.cn/v1",
+  "openai.api_key": "sk-...",                // 可选（备用路由）
+  "deepseek.api_key": "sk-...",              // 可选（备用路由）
+  "agnes.image_model": "agnes-image-2.5-flash",   // 生图模型，可换
+  "agnes.video_model": "agnes-video-2.5-flash"    // 生视频模型，可换
+}
+```
+
+面板左侧多模态工具行：
+- **👁 识图**：把右侧内嵌浏览器当前画面截图交给文本模型（视觉能力）识别
+- **🎨 生图**：填描述 → 生图模型出图，面板内显示 + 可下载
+- **🎬 生视频**：填描述 → 生视频模型异步出视频，面板内直接播放
+
+## 环境要求
+
+- Python ≥ 3.10（Windows/macOS/Linux 均可）
+- 首次需联网装依赖（`安装部署.bat` 自动完成）
+- Playwright Chromium 由 `安装部署.bat` 自动下载（约 150MB，仅首次）

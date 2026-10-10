@@ -1,0 +1,24 @@
+[project]
+name = "hermes-superagent-core"
+version = "0.1.0"
+description = "hermes-superagent 内核（嵌入浏览器 + 爬取核心 + 拇指浏览器 + CrewAI 协作层）"
+requires-python = ">=3.10"
+dependencies = [
+    "httpx>=0.27",
+    "aiohttp>=3.9",
+    "Pillow>=10",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+browser = ["playwright>=1.40"]
+collab = ["crewai>=0.50", "langgraph>=0.2"]
+dev = ["pytest>=8"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["hermes_superagent*"]
